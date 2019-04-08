@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.moss.server.dao.UserDao" >
+
+    <select id="login"  resultType="com.moss.server.model.User">
+      select t.id, t.merchant_id, t.nickname, t.sex, t.age, t.pwd, t.account, t.phone, t.email, t.idnumber, t.address, t.money, t.integral, t.head, t.flag, t.create_time, t.remark, tm.name merchantName
+      from tb_sys_user t
+      left join tb_busi_merchant tm on t.merchant_id = tm.id
+      where account = #{account}
+    </select>
+
+    <select id="getUserPermis"  resultType="java.lang.String">
+      select value from tb_sys_func
+    </select>
+
+    <insert id="add" useGeneratedKeys="true" keyProperty="id">
+      insert into tb_sys_user(merchant_id, nickname, sex, age, pwd, account, phone, email,
+       idnumber, address, money, integral, head, flag, create_time, remark)
+      values (#{merchantId}, #{nickname}, #{sex}, #{age}, #{pwd}, #{account}, #{phone}, #{email},
+         #{idnumber}, #{address}, 0, 0, #{head}, '0', now(), #{remark} )
+    </insert>
+
+    <delete id="del">
+        delete from tb_sys_user where id = #{id}
+    </delete>
+
+    <update id="update">
+        update tb_sys_user set
+          nickname = #{nickname},
+          sex = #{sex},
+          age = #{age},
+          phone = #{phone},
+          email = #{email},
+          idnumber = #{idnumber},
+          address = #{address},
+          head = #{head},
+          remark = #{remark}
+        where id = #{id}
+    </update>
+
+    <update id="updateFlag">
+        update tb_sys_user set
+          flag = #{flag}
+        where id = #{id}
+    </update>
+
+    <update id="setMerchant">
+        update tb_sys_user set
+          merchant_id = #{merchantId}
+        where id = #{id}
+    </update>
+
+    <update id="updateMoney">
+        update tb_sys_user set
+          money = money + #{money},
+          integral = integral + #{integral}
+        where id = #{id} and money + #{money} >=0 and  integral + #{integral} >= 0
+    </update>
+
+
+    <select id="get" resultType="com.moss.server.model.User">
+        select id, merchant_id, nickname, sex, age, pwd, account, phone, email,
+        idnumber, address, money, integral, head, flag, create_time, remark
+        from tb_sys_user t
+        <where>
+            t.merchant_id = #{merchantId}
+            <if test="phone != null">
+                and t.phone = #{phone}
+            </if>
+            <if test="account != null">
+                and t.account = #{account}
+            </if>
+        </where>
+        limit 1
+    </select>
+
+    <select id="list" resultType="com.moss.server.model.User">
+        select t.id, t.merchant_id, t.nickname, t.sex, t.age, t.pwd, t.account, t.phone, t.email,
+        t.idnumber, t.address, t.money, t.integral, t.head, t.flag, t.create_time, t.remark, tm.name merchantName
+        from tb_sys_user t
+        left join tb_busi_merchant tm on t.merchant_id = tm.id
+        <where>
+            <if test="flag != null">
+                and t.flag = #{flag}
+            </if>
+        </where>
+        <where>
+            <if test="idnumber != null">
+                and (t.idnumber = #{idnumber}
+            </if>
+            <if test="account != null">
+                or t.account = #{account}
+            </if>
+            <if test="nickname != null">
+                or t.nickname = #{nickname}
+            </if>
+            <if test="phone != null">
+                or t.phone = #{phone})
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+</mapper>

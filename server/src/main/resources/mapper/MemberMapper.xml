@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.moss.server.dao.MemberDao" >
+
+
+    <insert id="add" useGeneratedKeys="true" keyProperty="id">
+      insert into tb_busi_member(merchant_id, nickname, sex, age, pwd, account, phone, email,
+       idnumber, address, money, integral, head, flag, create_time, remark)
+      values (#{merchantId}, #{nickname}, #{sex}, #{age}, #{pwd}, #{account}, #{phone}, #{email},
+         #{idnumber}, #{address}, 0, 0, #{head}, '0', now(), #{remark} )
+    </insert>
+
+    <delete id="del">
+        delete from tb_busi_member where id = #{id}
+    </delete>
+
+    <update id="update">
+        update tb_busi_member set
+          nickname = #{nickname},
+          sex = #{sex},
+          age = #{age},
+          phone = #{phone},
+          email = #{email},
+          idnumber = #{idnumber},
+          address = #{address},
+          head = #{head},
+          remark = #{remark}
+        where id = #{id}
+    </update>
+
+    <update id="updateFlag">
+        update tb_busi_member set
+          flag = #{flag}
+        where id = #{id}
+    </update>
+
+    <update id="updateMoney">
+        update tb_busi_member set
+          money = money + #{money},
+          integral = integral + #{integral}
+        where id = #{id} and money + #{money} >=0 and  integral + #{integral} >= 0
+    </update>
+
+
+    <select id="get" resultType="com.moss.server.model.Member">
+        select t.id, t.merchant_id, t.nickname, t.sex, t.age, t.pwd, t.account, t.phone, t.email,
+        t.idnumber, t.address, t.money, t.integral, t.head, t.flag, t.create_time, t.remark, tm.name merchantName
+        from tb_busi_member t
+        left join tb_busi_merchant tm on t.merchant_id = tm.id
+        <where>
+            t.merchant_id = #{merchantId}
+            <if test="phone != null">
+                and t.phone = #{phone}
+            </if>
+            <if test="account != null">
+                and t.account = #{account}
+            </if>
+        </where>
+        limit 1
+    </select>
+
+    <select id="getById" resultType="com.moss.server.model.Member">
+        select t.id, t.merchant_id, t.nickname, t.sex, t.age, t.pwd, t.account, t.phone, t.email,
+        t.idnumber, t.address, t.money, t.integral, t.head, t.flag, t.create_time, t.remark
+        from tb_busi_member t
+        where id = #{id}
+        limit 1
+    </select>
+
+    <select id="list" resultType="com.moss.server.model.Member">
+        select t.id, t.merchant_id, t.nickname, t.sex, t.age, t.pwd, t.account, t.phone, t.email,
+        t.idnumber, t.address, t.money, t.integral, t.head, t.flag, t.create_time, t.remark, tm.name merchantName
+        from tb_busi_member t
+        left join tb_busi_merchant tm on t.merchant_id = tm.id
+        <where>
+            <if test="flag != null">
+                and t.flag = #{flag}
+            </if>
+        </where>
+        <where>
+            <if test="idnumber != null">
+                and (t.idnumber = #{idnumber}
+            </if>
+            <if test="account != null">
+                or t.account = #{account}
+            </if>
+            <if test="nickname != null">
+                or t.nickname = #{nickname}
+            </if>
+            <if test="phone != null">
+                or t.phone = #{phone})
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+
+
+</mapper>

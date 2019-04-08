@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.moss.server.dao.FlowDao" >
+
+
+    <insert id="add" useGeneratedKeys="true" keyProperty="id">
+      insert into tb_busi_flow( no, member_id, operator_id, merchant_id, money, payway, content, type, flag, create_time, remark)
+      values (#{no}, #{memberId}, #{operatorId}, #{merchantId}, #{money}, #{payway}, #{content}, #{type},
+         '0', now(), #{remark} )
+    </insert>
+
+    <select id="list" resultType="com.moss.server.model.FlowInfo">
+        select f.id, f.no, mb.account, mb.nickname memberName, mc.name merchantName, f.type, f.money, f.payway, u.nickname operatorName,f.create_time,f.content
+        from tb_busi_flow f
+        left join tb_busi_member mb on f.member_id = mb.id
+        left join tb_busi_merchant mc on f.merchant_id = mc.id
+        left join tb_sys_user u on f.operator_id = u.id
+        <where>
+            <if test="account != null">
+                and mb.account = #{account}
+            </if>
+        </where>
+        order by f.id desc
+    </select>
+
+
+
+</mapper>
