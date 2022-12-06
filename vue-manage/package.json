@@ -13,7 +13,7 @@
     "element-ui": "^2.4.11",
     "js-md5": "^0.7.3",
     "mavon-editor": "^2.6.17",
-    "qs": "^6.6.0",
+    "qs": "^6.7.3",
     "vue": "^2.5.21",
     "vue-cropperjs": "^3.0.0",
     "vue-quill-editor": "^3.0.6",
